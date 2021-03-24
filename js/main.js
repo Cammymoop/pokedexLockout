@@ -22,14 +22,18 @@ peerConnection.onicecandidate = function (e) {
     }
 
     var htmlStuff = "<input id='copyMe' type='text'> <button onclick='copyMyThingToClipboard()'>Copy to clipboard</button>";
+    var includeGen2 = "";
     if (CONNECTION_INFO.connectionMode === "master") {
         htmlStuff = "Conection info generated.<br>Send this text to whoever is connecting and have them paste it into this page:<br>" + htmlStuff;
         htmlStuff += "<br><button id='sent-button'>Ok did it</button>";
+        includeGen2 = $('#include-gen-2').prop('checked') ? "with2+" : "";
     } else if (CONNECTION_INFO.connectionMode === "not-master") {
         htmlStuff = "Connection info processed.<br>Send this text back to whoever initiated the conection.<br>" + htmlStuff;
     }
     $("#setup").html(htmlStuff);
-    $("#copyMe").val(CONNECTION_INFO.offerAnswer);
+    if (CONNECTION_INFO.offerAnswer) {
+        $("#copyMe").val(includeGen2 + CONNECTION_INFO.offerAnswer);
+    }
 
     if (CONNECTION_INFO.connectionMode === "master") {
         $("#sent-button").click(function () {
@@ -57,8 +61,13 @@ peerConnection.ondatachannel = function (e) {
     connectionReady();
 };
 
+function disableSettings() {
+    $('#start-settings').find('input').prop('disabled', true);
+}
+
 $(function () {
     $("#initiate-connection").click(function () {
+        disableSettings();
         console.log("now in master mode");
         $("#initiate-connection").remove();
         $("#join-connection").remove();
@@ -73,6 +82,7 @@ $(function () {
     });
 
     $("#join-connection").click(function () {
+        disableSettings();
         console.log("now in not-master mode");
         $("#initiate-connection").remove();
         $("#join-connection").remove();
@@ -82,7 +92,14 @@ $(function () {
         htmlStuff += "<input id='remote-val' type='text'> <button id='ok-button'>Ok</button>";
         $("#setup").html(htmlStuff);
         $("#ok-button").click(function () {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse($('#remote-val').val())));
+            var textStuff = $('#remote-val').val();
+            if (textStuff.substr(0, 6) === "with2+") {
+                textStuff = textStuff.substr(6);
+                $('#include-gen-2').prop('checked', true);
+            } else {
+                $('#include-gen-2').prop('checked', false);
+            }
+            peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(textStuff)));
             peerConnection.createAnswer(function (answerDesc) {
                 peerConnection.setLocalDescription(answerDesc);
             }, function () {}, sdpConstraints);
