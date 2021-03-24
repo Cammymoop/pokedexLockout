@@ -26,6 +26,30 @@
     vertical-align: middle;
 }
 
+.color-chooser {
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    margin: 3px;
+    vertical-align: middle;
+}
+.color-chooser.chosen {
+    width: 24px;
+    height: 24px;
+    border: solid 3px black;
+    margin: 2px;
+}
+
+.square-group {
+    display: inline-block;
+}
+
+#inner-board {
+    width: 520px;
+    overflow: hidden;
+    resize: horizontal;
+}
+
 #new-game-button {
     background: url(img/new_game.png);
 }
@@ -34,23 +58,23 @@
     background: #eee, url(img/new_game.png);
 }
 
-.square-thing.color1 {
+.color-chooser.color1 {
     background-color: #fdd;
 }
-.square-thing.color1:hover {
+.color-chooser.color1:hover {
     background-color: #fbb;
 }
-.square-thing.color1.chosen,.square-thing.color1.chosen:hover {
+.color-chooser.color1.chosen,.color-chooser.color1.chosen:hover {
     background-color: #f66;
 }
 
-.square-thing.color2 {
+.color-chooser.color2 {
     background-color: #ddf;
 }
-.square-thing.color2:hover {
+.color-chooser.color2:hover {
     background-color: #bbf;
 }
-.square-thing.color2.chosen,.square-thing.color2.chosen:hover {
+.color-chooser.color2.chosen,.color-chooser.color2.chosen:hover {
     background-color: #66f;
 }
 

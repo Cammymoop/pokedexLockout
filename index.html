@@ -18,14 +18,16 @@
         </div>
         <div id="start-settings">
             <span class='head'>Settings:</span><br>
-            Pokemon per row: <input id="poke-per-row" type="number" value="16" min="8" max="160"><br>
-            Show last pokemon selected by other person: <input id="show-last-selected" type="checkbox" >
+            <input id="include-gen-2" type="checkbox"><label for="include-gen-2">Include Gen 2</label><br>
+            <input id="show-last-selected" type="checkbox"><label for="show-last-selected">Show last pokemon selected by other person</label>
         </div>
         <div id="setup">
             <button id="initiate-connection">Initiate Connection</button> <button id="join-connection">Join Connection</button>
         </div>
         <div id="board" style="display:none">
-            <h3>Pokèdex Lockout (prototype)</h3>
+            <h3>Pokèdex Lockout</h3>
+            <div id="inner-board">
+            </div>
         </div>
         <div id="sync-cover"></div>
     </body>

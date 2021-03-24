@@ -1,60 +1,63 @@
 
 var MAX_POKEMON = 151;
 var SRC_POKE_PER_ROW = 13;
-var POKE_PER_ROW = 16;
 var POKE_RESOLUTION = 32;
 
-var SHOW_LAST_SELECTED = false;
+var MAX_POKEMON_GEN2 = 251;
+var SRC_POKE_PER_ROW_GEN2 = 16;
 
 var currentColor = "color1";
 
+var showLastSelected = false;
+var includeGen2 = false;
+var maxID = MAX_POKEMON;
 
 var lastSyncTime = null;
 // interval in miliseconds to check if the boards are in sync
 var SYNC_INTERVAL = 15000;
 
 function makeBoard() {
-    POKE_PER_ROW = Number($("#poke-per-row").val());
-    SHOW_LAST_SELECTED = $("#show-last-selected").prop("checked");
+    showLastSelected = $("#show-last-selected").prop("checked");
 
     currentColor = (CONNECTION_INFO.connectionMode === "master") ? "color1" : "color2";
-    $board = $("#board");
-    for (var i = 0; i < MAX_POKEMON; i++) {
-        var bgStyle = "background: url(img/poke_sprites.png)";
-        bgStyle += " -" + ((i % SRC_POKE_PER_ROW) * POKE_RESOLUTION) + "px";
-        bgStyle += " -" + (Math.floor(i/SRC_POKE_PER_ROW) * POKE_RESOLUTION) + "px";
+    $board = $("#inner-board");
+
+    includeGen2 = $('#include-gen-2').prop('checked');
+    maxID = includeGen2 ? MAX_POKEMON_GEN2 : MAX_POKEMON;
+
+    for (var id = 0; id < maxID; id++) {
+        var imgName = "poke_sprites.png";
+        var id_img_offset = id;
+        var pokemonPerRow = SRC_POKE_PER_ROW;
+        if (id >= MAX_POKEMON) {
+            imgName = "gen2_sprites.png";
+            id_img_offset -= MAX_POKEMON;
+            pokemonPerRow = SRC_POKE_PER_ROW_GEN2;
+        }
+        var bgStyle = "background: url(img/" + imgName + ")";
+        bgStyle += " -" + ((id_img_offset % pokemonPerRow) * POKE_RESOLUTION) + "px";
+        bgStyle += " -" + (Math.floor(id_img_offset/pokemonPerRow) * POKE_RESOLUTION) + "px";
         var pokeImg = "<div class='poke-img' style='" + bgStyle + "'></div>";
 
-        $board.append("<div class='poke' onclick='pokeClick(this)' data-poke-id='" + (i+1) + "'>" + pokeImg + "</div>");
-        if (i % POKE_PER_ROW === POKE_PER_ROW - 1) {
-            $board.append("<br>");
-        }
-    }
-    // didn't just put in a linebreak, but within 3 of the end of the line
-    if ((i%POKE_PER_ROW) !== 0 && (i%POKE_PER_ROW) > POKE_PER_ROW - 3) {
-        $board.append("<br>");
-        i += POKE_PER_ROW - (i%POKE_PER_ROW);
+        $board.append("<div class='poke' onclick='pokeClick(this)' data-poke-id='" + (id+1) + "'>" + pokeImg + "</div>");
     }
 
     $board.append("<div class='square-thing'></div>");
-    var classss = "square-thing color1" + ((currentColor === "color1") ? " chosen" : "");
-    $board.append("<div id='chooser-color1' class='" + classss + "' onclick='chooseColor(\"color1\")'></div>");
-    var classsss = "square-thing color2" + ((currentColor === "color2") ? " chosen" : "");
-    $board.append("<div id='chooser-color2' class='" + classsss + "' onclick='chooseColor(\"color2\")'></div>");
 
-    i += 3;
-    if ((i%POKE_PER_ROW) > POKE_PER_ROW - 3 || i % POKE_PER_ROW === 0) {
-        $board.append("<br>");
-    }
+    var chosen1 = currentColor === "color1" ? "chosen" : "";
+    var chosen2 = currentColor === "color2" ? "chosen" : "";
+    $board.append("<div class='square-group'>" +
+    "<div id='chooser-color1' class='color-chooser color1 " + chosen1 + "' onclick='chooseColor(\"color1\")'></div>" +
+    "<div id='chooser-color2' class='color-chooser color2 " + chosen2 + "' onclick='chooseColor(\"color2\")'></div>" +
+    "</div>");
 
     $board.append("<div id='connection-status' class='square-thing good' title='connection status'></div>");
-    $board.append("<div id='poke-count-color1' class='square-thing text-color1'><div>0</div></div>");
-    $board.append("<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>");
 
-    i += 1;
-    if (i % POKE_PER_ROW === 0) {
-        $board.append("<br>");
-    }
+    $board.append("<div class='square-group'>" +
+    "<div id='poke-count-color1' class='square-thing text-color1'><div>0</div></div>" +
+    "<div id='poke-count-color2' class='square-thing text-color2'><div>0</div></div>" +
+    "</div>");
+
     $board.append("<div id='new-game-button' class='square-thing'></div>");
 
     if (CONNECTION_INFO.connectionMode === "master") {
@@ -149,9 +152,9 @@ function compareBoard(theirBoard) {
 }
 
 function forceSyncBoard(theirBoard) {
-    for (var i = 1; i < MAX_POKEMON + 1; i++) {
-        var pokeColor = theirBoard[i].color;
-        var $poke = $(".poke[data-poke-id='" + i + "']");
+    for (var id = 1; id < maxID + 1; id++) {
+        var pokeColor = theirBoard[id].color;
+        var $poke = $(".poke[data-poke-id='" + id + "']");
         $poke.removeClass("color1 color2 last-picked");
         if (pokeColor === "color1" || pokeColor === "color2") {
             $poke.addClass(pokeColor);
@@ -173,8 +176,8 @@ function newGame() {
 }
 
 function clearBoard() {
-    for (var i = 1; i < MAX_POKEMON + 1; i++) {
-        var $poke = $(".poke[data-poke-id='" + i + "']");
+    for (var id = 1; id < maxID + 1; id++) {
+        var $poke = $(".poke[data-poke-id='" + id + "']");
         $poke.removeClass("color1 color2 marked last-picked");
     }
     updatePokeCounts();
@@ -258,7 +261,7 @@ function setPoke(poke_id, color) {
         return false; // can't set it
     } else {
         $poke.addClass(color);
-        if (SHOW_LAST_SELECTED) {
+        if (showLastSelected) {
             $(".poke").removeClass("last-picked");
             $poke.addClass("last-picked");
         }
