@@ -5,24 +5,23 @@
         <title>Pokedex Lockout Prototype</title>
         <link href="index.css" rel="stylesheet" type="text/css" />       
         <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
-        <script src="js/adapter.js"></script>
         <script src="js/main.js"></script>
         <script src="js/board.js"></script>
     </head>
     <body>
         <div id="instructions" class="instructions">
             THIS IS A PROTOTYPE, EXPECT BUGGINESS<br>
-            Since I'm not running a server or anything for this you have to set up the connection yourselves<br>
-            It's pretty easy though, one of you just picks "Initiate Connection", and the other picks "Join Connection"<br>
-            Then just do what it says, you'll need to send the connection info to each other via some sort of messaging like Discord<br><br>
         </div>
         <div id="start-settings">
             <span class='head'>Settings:</span><br>
             <input id="include-gen-2" type="checkbox"><label for="include-gen-2">Include Gen 2</label><br>
-            <input id="show-last-selected" type="checkbox"><label for="show-last-selected">Show last pokemon selected by other person</label>
+            <input id="show-last-selected" type="checkbox" checked><label for="show-last-selected">Show last pokemon selected by other person</label>
+            <input id="shuffle-order" type="checkbox"><label for="shuffle-order">Shuffle the order of the pokemon (every new game)</label>
         </div>
         <div id="setup">
-            <button id="initiate-connection">Initiate Connection</button> <button id="join-connection">Join Connection</button>
+            <div id='no-auto-connect' style="display: none;">Auto connection server is unavailable, you can try manually connecting instead</div>
+            <button id="initiate-connection">Initiate Connection</button>&nbsp;<button id="join-connection">Join Connection</button>
+            <br><br><button id="do-manual-connection" style="font-size: 80%">Do Manual Connection</button><span id='manual-connection-note'>(Not recommended)</span>
         </div>
         <div id="board" style="display:none">
             <h3>Pokèdex Lockout</h3>

@@ -16,6 +16,12 @@ var lastSyncTime = null;
 // interval in miliseconds to check if the boards are in sync
 var SYNC_INTERVAL = 15000;
 
+// it's not magic
+$.fn.shuffle = function(){
+    for(var j, x, i = this.length; i; j = Math.floor(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
+    return this;
+};
+
 function makeBoard() {
     showLastSelected = $("#show-last-selected").prop("checked");
 
@@ -82,6 +88,16 @@ function makeBoard() {
         $("#board").append("<div id='new-game-dialog'>Are you sure you want to clear the board? " + btns + "</div>");
         $("#nobtn").click(function () {$("#new-game-dialog").remove();});
         $("#yesbtn").click(function () {$("#new-game-dialog").remove(); newGame();});
+    });
+}
+
+function shuffleOrder() {
+    $board = $("#inner-board");
+
+    var $pokes = $board.find(".poke");
+    $board.detach(".poke");
+    $pokes.shuffle().each(function (_i, elem) {
+        $board.prepend(elem);
     });
 }
 
@@ -166,6 +182,9 @@ function forceSyncBoard(theirBoard) {
 }
 
 function newGame() {
+    if ($("#shuffle-order").prop("checked")) {
+        shuffleOrder();
+    }
     if (!CONNECTION_INFO.connected) {
         clearBoard();
         return false;
@@ -262,7 +281,7 @@ function setPoke(poke_id, color) {
     } else {
         $poke.addClass(color);
         if (showLastSelected) {
-            $(".poke").removeClass("last-picked");
+            $(".poke.last-picked").removeClass("last-picked");
             $poke.addClass("last-picked");
         }
         return true; // set it
