@@ -11,12 +11,12 @@ import sys
 from pathlib import Path
 
 PORT = 3000
-HOST_PATH = 'public'
+HOST_PATH = 'docs'
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         # Set the directory to serve files from
-        super().__init__(*args, directory=os.path.join(os.path.dirname(__file__), 'public'), **kwargs)
+        super().__init__(*args, directory=os.path.join(os.path.dirname(__file__), HOST_PATH), **kwargs)
     
     def end_headers(self):
         # Add CORS headers for local development
