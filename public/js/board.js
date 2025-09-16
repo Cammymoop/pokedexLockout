@@ -16,6 +16,8 @@ var lastSyncTime = null;
 // interval in miliseconds to check if the boards are in sync
 var SYNC_INTERVAL = 15000;
 
+var firstGameStarted = false;
+
 // it's not magic
 $.fn.shuffle = function(){
     for(var j, x, i = this.length; i; j = Math.floor(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
@@ -25,7 +27,7 @@ $.fn.shuffle = function(){
 function makeBoard() {
     showLastSelected = $("#show-last-selected").prop("checked");
 
-    currentColor = (CONNECTION_INFO.connectionMode === "master") ? "color1" : "color2";
+    currentColor = (CONNECTION_INFO.connectionRole === "master") ? "color1" : "color2";
     $board = $("#inner-board");
 
     includeGen2 = $('#include-gen-2').prop('checked');
@@ -66,7 +68,7 @@ function makeBoard() {
 
     $board.append("<div id='new-game-button' class='square-thing'></div>");
 
-    if (CONNECTION_INFO.connectionMode === "master") {
+    if (CONNECTION_INFO.connectionRole === "master") {
         lastSyncTime = $.now();
     }
 
@@ -91,20 +93,53 @@ function makeBoard() {
     });
 }
 
+function firstGame() {
+    if (CONNECTION_INFO.connectionRole !== "master" || firstGameStarted) {
+        return;
+    }
+
+    console.log("FIRST GAME", CONNECTION_INFO.connectionRole);
+    firstGameStarted = true;
+
+    if ($("#shuffle-order").prop("checked")) {
+        var newOrder = shuffleOrder();
+        sendMessage("shuffledOrder", newOrder);
+    }
+}
+
 function shuffleOrder() {
+    console.log("SHUFFLING");
+    var newOrder = [];
     $board = $("#inner-board");
 
     var $pokes = $board.find(".poke");
     $board.detach(".poke");
     $pokes.shuffle().each(function (_i, elem) {
+        var poke_id = $(elem).attr("data-poke-id");
+        newOrder.unshift(poke_id);
         $board.prepend(elem);
     });
+    return newOrder;
+}
+
+function shuffledOrderReceived(newOrder) {
+    var $pokes = $board.find(".poke");
+    $board.detach(".poke");
+    var pokes = $pokes.toArray();
+    
+    // Sort in reverse order because we're prepending them
+    pokes.sort(function (a, b) { 
+        return newOrder.indexOf(b.getAttribute("data-poke-id")) - newOrder.indexOf(a.getAttribute("data-poke-id")); 
+    });
+    for (var p of pokes) {
+        $board.prepend(p);
+    }
 }
 
 function forceBoardSyncMessage(notMe) {
     $("#sync-cover").show();
     if (notMe) {
-        if (CONNECTION_INFO.connectionMode === "master") {
+        if (CONNECTION_INFO.connectionRole === "master") {
             var boardData = serializeBoard();
             sendMessage("sync", {"sync_event": "force-sync", "board_data": boardData});
             $("#sync-cover").hide();
@@ -183,7 +218,8 @@ function forceSyncBoard(theirBoard) {
 
 function newGame() {
     if ($("#shuffle-order").prop("checked")) {
-        shuffleOrder();
+        var newOrder = shuffleOrder();
+        sendMessage("shuffledOrder", newOrder);
     }
     if (!CONNECTION_INFO.connected) {
         clearBoard();
@@ -241,6 +277,10 @@ function connectionWarning() {
 
 function pokeClick(poke) {
     $poke = $(poke);
+    if (!CONNECTION_INFO.connected || !CONNECTION_INFO.mainDataChannelReady) {
+        console.log("not connected or main data channel ready");
+        return;
+    }
     var poke_id = $poke.attr("data-poke-id");
     if ($poke.hasClass(currentColor)) {
         $poke.removeClass(currentColor);

@@ -3,6 +3,14 @@
     color:#963535;
 }
 
+.auto-connection-text {
+    font-size: larger
+}
+
+button {
+    font-size: inherit;
+}
+
 #start-settings {
     display: inline-block;
     color:#222;
@@ -114,7 +122,9 @@
 }
 
 .poke:hover {
-    background-color: #eee;
+    background-color: #ddd;
+    outline: 1px solid #999;
+    outline-offset: -1px;
 }
 
 .poke.color1 {
@@ -124,10 +134,11 @@
     background-color: #fbb;
 }
 .poke.color1.last-picked {
-    animation-duration: 0.6s;
-    animation-name: pulse1;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    outline: 2px solid #222;
+    outline-offset: -2px;
+    animation-duration: 0.4s;
+    animation-name: bounce;
+    animation-iteration-count: 1;
 }
 
 .poke.color2 {
@@ -137,21 +148,26 @@
     background-color: #bbf;
 }
 .poke.color2.last-picked {
-    animation-duration: 0.6s;
-    animation-name: pulse2;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    outline: 2px solid #222;
+    outline-offset: -2px;
+    animation-duration: 0.4s;
+    animation-name: bounce;
+    animation-iteration-count: 1;
 }
 
-@keyframes pulse1 {
+@keyframes bounce {
   from {
-    background-color: #f66;
+    scale: 1;
+  }
+  20% {
+    scale: 1.2;
   }
   to {
-    background-color: #222;
+    scale: 1;
   }
 }
 
+/*
 @keyframes pulse2 {
   from {
     background-color: #66f;
@@ -161,56 +177,57 @@
     background-color: #222;
   }
 }
+*/
 
 /* Marking for local reference */
 .poke.marked {
     background: repeating-linear-gradient(
         45deg,
-        #222, #222 6.25%,
+        #ddd, #ddd 6.25%,
         #fff 6.25%, #fff 18.75%,
-        #222 18.75%, #222 25%
+        #ddd 18.75%, #ddd 25%
     );
 }
 .poke.marked:hover {
     background: repeating-linear-gradient(
         45deg,
-        #777, #777 6.25%,
+        #555, #555 6.25%,
         #eee 6.25%, #eee 18.75%,
-        #777 18.75%, #777 25%
+        #555 18.75%, #555 25%
     );
 }
 
 .poke.marked.color1 {
     background: repeating-linear-gradient(
         45deg,
-        #222, #222 6.25%,
+        #f99, #f99 6.25%,
         #f66 6.25%, #f66 18.75%,
-        #222 18.75%, #222 25%
+        #f99 18.75%, #f99 25%
     );
 }
 .poke.marked.color1:hover {
     background: repeating-linear-gradient(
         45deg,
-        #777, #777 6.25%,
+        #555, #555 6.25%,
         #fbb 6.25%, #fbb 18.75%,
-        #777 18.75%, #777 25%
+        #555 18.75%, #555 25%
     );
 }
 
 .poke.marked.color2 {
     background: repeating-linear-gradient(
         45deg,
-        #222, #222 6.25%,
+        #99f, #99f 6.25%,
         #66f 6.25%, #66f 18.75%,
-        #222 18.75%, #222 25%
+        #99f 18.75%, #99f 25%
     );
 }
 .poke.marked.color2:hover {
     background: repeating-linear-gradient(
         45deg,
-        #777, #777 6.25%,
+        #555, #555 6.25%,
         #bbf 6.25%, #bbf 18.75%,
-        #777 18.75%, #777 25%
+        #555 18.75%, #555 25%
     );
 }
 /* END Marking for local reference */

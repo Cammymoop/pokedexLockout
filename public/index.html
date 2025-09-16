@@ -14,15 +14,18 @@
         </div>
         <div id="start-settings">
             <span class='head'>Settings:</span><br>
-            <input id="include-gen-2" type="checkbox"><label for="include-gen-2">Include Gen 2</label><br>
+            <input id="include-gen-2" type="checkbox"><label for="include-gen-2">Include Gen 2</label>
+            <br>
             <input id="show-last-selected" type="checkbox" checked><label for="show-last-selected">Show last pokemon selected by other person</label>
+            <br>
             <input id="shuffle-order" type="checkbox"><label for="shuffle-order">Shuffle the order of the pokemon (every new game)</label>
         </div>
         <div id="setup">
             <div id='no-auto-connect' style="display: none;">Auto connection server is unavailable, you can try manually connecting instead</div>
-            <button id="initiate-connection">Initiate Connection</button>&nbsp;<button id="join-connection">Join Connection</button>
-            <br><br><button id="do-manual-connection" style="font-size: 80%">Do Manual Connection</button><span id='manual-connection-note'>(Not recommended)</span>
+            <button id="initiate-connection">Start Connection</button>&nbsp;<button id="join-connection">Join Connection</button>
+            <br><br><span id='manual-connection' style="font-size: 70%"><button id="do-manual-connection">Do Manual Connection</button>(Not recommended)</span>
         </div>
+        <div id="auto-connection-status" style="display: none;" class="auto-connection-text">Connecting...</div>
         <div id="board" style="display:none">
             <h3>Pokèdex Lockout</h3>
             <div id="inner-board">
